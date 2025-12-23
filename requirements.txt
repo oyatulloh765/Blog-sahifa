@@ -10,3 +10,4 @@ python-slugify==8.0.1
 Markdown==3.5.1
 bleach==6.1.0
 requests==2.31.0
+gunicorn==21.2.0
