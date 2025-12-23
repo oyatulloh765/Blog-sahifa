@@ -87,7 +87,7 @@ def post(slug):
     # Comments
     form = CommentForm()
     if form.validate_on_submit():
-        comment = Comment(author=form.author.data, content=form.content.data, post_id=post.id)
+        comment = Comment(author_name=form.author.data, content=form.content.data, post_id=post.id)
         db.session.add(comment)
         db.session.commit()
         flash('Izoh qoldirildi!', 'success')

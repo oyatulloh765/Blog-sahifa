@@ -83,11 +83,39 @@
             <i data-lucide="heart" class="w-5 h-5"></i>
             <span>Yoqdi</span>
         </button>
-        <button
-            class="flex items-center space-x-2 px-6 py-3 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors">
-            <i data-lucide="share-2" class="w-5 h-5"></i>
-            <span>Ulashish</span>
-        </button>
+
+        <!-- Share Dropdown -->
+        <div class="relative" x-data="{ open: false }">
+            <button @click="open = !open"
+                class="flex items-center space-x-2 px-6 py-3 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors">
+                <i data-lucide="share-2" class="w-5 h-5"></i>
+                <span>Ulashish</span>
+            </button>
+            <div x-show="open" @click.away="open = false" x-transition
+                class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-gray-100 dark:border-slate-700 py-2 z-50">
+                <a href="https://t.me/share/url?url={{ request.url }}&text={{ post.title }}" target="_blank"
+                    class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700">
+                    <i data-lucide="send" class="w-4 h-4 mr-3"></i> Telegram
+                </a>
+                <a href="https://api.whatsapp.com/send?text={{ post.title }}%20{{ request.url }}" target="_blank"
+                    class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700">
+                    <i data-lucide="message-circle" class="w-4 h-4 mr-3"></i> WhatsApp
+                </a>
+                <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text={{ post.title }}" target="_blank"
+                    class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700">
+                    <i data-lucide="twitter" class="w-4 h-4 mr-3"></i> Twitter
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" target="_blank"
+                    class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700">
+                    <i data-lucide="facebook" class="w-4 h-4 mr-3"></i> Facebook
+                </a>
+                <hr class="my-1 border-gray-200 dark:border-slate-700">
+                <button onclick="copyLink()"
+                    class="flex items-center w-full px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700">
+                    <i data-lucide="copy" class="w-4 h-4 mr-3"></i> Havolani nusxalash
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Comments Section -->
@@ -199,6 +227,16 @@
             console.error(e);
             alert('Iltimos, avval tizimga kiring.');
         }
+    }
+
+    // Copy Link Function
+    function copyLink() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('Havola nusxalandi!');
+        }).catch(err => {
+            console.error('Nusxalab bo\'lmadi:', err);
+            prompt('Havolani nusxalang:', window.location.href);
+        });
     }
 </script>
 {% endblock %}
