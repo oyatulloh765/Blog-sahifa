@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Maqola Tahrirlash/Yaratish{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+<style>
+    /* Dark mode fix for SimpleMDE */
+    .dark .CodeMirror {
+        background: #1e293b;
+        color: #e2e8f0;
+        border-color: #334155;
+    }
+
+    .dark .editor-toolbar {
+        border-color: #334155;
+    }
+
+    .dark .editor-toolbar a {
+        color: #e2e8f0 !important;
+    }
+
+    .dark .editor-toolbar i.separator {
+        border-right-color: #334155;
+    }
+
+    .CodeMirror,
+    .CodeMirror-scroll {
+        min-height: 400px;
+    }
+</style>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-8">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-8 border-b dark:border-slate-700 pb-4">{{ title
+            }}</h1>
+
+        <form method="POST" enctype="multipart/form-data" novalidate class="space-y-6">
+            {{ form.hidden_tag() }}
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Title & Category -->
+                <div class="md:col-span-2 space-y-6">
+                    <div>
+                        {{ form.title.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                        {{ form.title(class="block w-full rounded-xl border-gray-300 dark:border-slate-600 bg-gray-50
+                        dark:bg-slate-900 shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 px-4",
+                        placeholder="Maqola sarlavhasi") }}
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        {{ form.category.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1")
+                        }}
+                        {{ form.category(class="block w-full rounded-xl border-gray-300 dark:border-slate-600 bg-gray-50
+                        dark:bg-slate-900 shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 px-4") }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Upload -->
+            <div>
+                {{ form.image.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                <div
+                    class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-slate-600 border-dashed rounded-xl hover:border-primary transition-colors cursor-pointer bg-gray-50 dark:bg-slate-900/50">
+                    <div class="space-y-1 text-center">
+                        <i data-lucide="image" class="mx-auto h-12 w-12 text-gray-400"></i>
+                        <div class="flex text-sm text-gray-600 dark:text-gray-400">
+                            <label for="image"
+                                class="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary/90 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary">
+                                <span>Rasm yuklash</span>
+                                {{ form.image(class="sr-only") }}
+                            </label>
+                            <p class="pl-1">yoki sudrab tashlang</p>
+                        </div>
+                        <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Upload -->
+            <div>
+                {{ form.video.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                {{ form.video(class="block w-full text-sm text-slate-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-violet-50 file:text-violet-700
+                hover:file:bg-violet-100 mb-1") }}
+                <p class="text-xs text-gray-500">MP4, MOV, AVI (max 50MB)</p>
+            </div>
+
+            <!-- Audio Upload -->
+            <div>
+                {{ form.audio.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                {{ form.audio(class="block w-full text-sm text-slate-500
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-full file:border-0
+                file:text-sm file:font-semibold
+                file:bg-pink-50 file:text-pink-700
+                hover:file:bg-pink-100 mb-1") }}
+                <p class="text-xs text-gray-500">MP3, WAV (max 10MB)</p>
+            </div>
+
+            <!-- Summary -->
+            <div>
+                {{ form.summary.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                {{ form.summary(rows=3, class="block w-full rounded-xl border-gray-300 dark:border-slate-600 bg-gray-50
+                dark:bg-slate-900 shadow-sm focus:border-primary focus:ring-primary sm:text-sm py-3 px-4",
+                placeholder="Maqola haqida qisqacha...") }}
+            </div>
+
+            <!-- Content -->
+            <div>
+                {{ form.content(id="markdown-editor") }}
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end pt-6 border-t dark:border-slate-700">
+                <a href="{{ url_for('admin_dashboard') }}"
+                    class="mr-4 px-6 py-3 rounded-xl border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 font-medium">Bekor
+                    qilish</a>
+                {{ form.submit(class="px-6 py-3 rounded-xl border border-transparent shadow-sm text-sm font-medium
+                text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2
+                focus:ring-primary cursor-pointer shadow-lg shadow-primary/30") }}
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    var simplemde = new SimpleMDE({ element: document.getElementById("markdown-editor") });
+
+    // Sync SimpleMDE value to textarea before submit
+    document.querySelector('form').addEventListener('submit', function () {
+        document.getElementById('markdown-editor').value = simplemde.value();
+    });
+</script>
+{% endblock %}

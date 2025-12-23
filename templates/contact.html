@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Bog'lanish{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div
+        class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl p-8 md:p-12 border border-gray-200 dark:border-slate-700">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-4">Biz bilan bog'laning</h1>
+            <p class="text-gray-500 dark:text-gray-400">Savollaringiz bormi? Quyidagi formani to'ldiring.</p>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            {{ form.hidden_tag() }}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    {{ form.name.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                    {{ form.name(class="block w-full rounded-xl border-gray-300 dark:border-slate-600 bg-gray-50
+                    dark:bg-slate-900 py-3 px-4 focus:ring-primary focus:border-primary") }}
+                </div>
+                <div>
+                    {{ form.email.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                    {{ form.email(class="block w-full rounded-xl border-gray-300 dark:border-slate-600 bg-gray-50
+                    dark:bg-slate-900 py-3 px-4 focus:ring-primary focus:border-primary") }}
+                </div>
+            </div>
+            <div>
+                {{ form.message.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                {{ form.message(rows=5, class="block w-full rounded-xl border-gray-300 dark:border-slate-600 bg-gray-50
+                dark:bg-slate-900 py-3 px-4 focus:ring-primary focus:border-primary") }}
+            </div>
+
+            <button type="submit"
+                class="w-full py-4 rounded-xl bg-primary text-white font-bold text-lg hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 transform hover:-translate-y-1">
+                Xabarni Yuborish
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Biz Haqimizda{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-16">
+        <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-6">Bizning Maqsadimiz</h1>
+        <p class="text-xl text-gray-500 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto">
+            Texnologiya olamidagi eng so'nggi yangiliklarni va bilimni ochiq va tushunarli tilda ulashish orqali jamiyat
+            rivojiga hissa qo'shish.
+        </p>
+    </div>
+
+    <div
+        class="bg-white dark:bg-slate-800 rounded-3xl overflow-hidden shadow-xl border border-gray-200 dark:border-slate-700 mb-16">
+        <div class="md:flex">
+            <div class="md:w-1/2">
+                <img class="h-full w-full object-cover"
+                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                    alt="Team">
+            </div>
+            <div class="p-8 md:p-12 md:w-1/2 flex flex-col justify-center">
+                <div class="uppercase tracking-wide text-sm text-primary font-semibold mb-2">Jamoa</div>
+                <h2 class="block mt-1 text-2xl font-bold leading-tight text-slate-900 dark:text-white">Professional
+                    yondashuv</h2>
+                <p class="mt-4 text-gray-500 dark:text-gray-400">
+                    Bizning jamoamiz tajribali dasturchilar va kontent yaratuvchilardan iborat. Biz har bir maqola
+                    ustida chuqur izlanish olib boramiz.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="md:grid md:grid-cols-3 md:gap-6">
+        <div class="md:col-span-1">
+            <div class="px-4 sm:px-0 text-center">
+                <div class="relative w-32 h-32 mx-auto mb-4">
+                    <img class="rounded-full object-cover w-full h-full border-4 border-white shadow-lg"
+                        src="{{ image_file }}" alt="Profile Pic">
+                    <span
+                        class="absolute bottom-0 right-0 bg-green-500 w-6 h-6 rounded-full border-2 border-white"></span>
+                </div>
+                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">{{ current_user.username }}</h3>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    {{ current_user.email }}
+                </p>
+                <div class="mt-4 flex justify-center space-x-3 text-sm">
+                    <div class="text-center px-4 py-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
+                        <span class="block font-bold text-xl text-primary">{{ current_user.points }}</span>
+                        <span class="text-gray-500 text-xs">Points</span>
+                    </div>
+                    <div class="text-center px-4 py-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
+                        <span class="block font-bold text-xl text-orange-500">{{ current_user.streak }}</span>
+                        <span class="text-gray-500 text-xs">Day Streak</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5 md:col-span-2 md:mt-0">
+            <div class="shadow sm:overflow-hidden sm:rounded-md">
+                <div class="space-y-6 bg-white dark:bg-slate-800 px-4 py-5 sm:p-6">
+                    <form method="POST" action="" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+
+                        <div class="grid grid-cols-6 gap-6">
+                            <div class="col-span-6 sm:col-span-4">
+                                {{ form.username.label(class="block text-sm font-medium text-gray-700
+                                dark:text-gray-300") }}
+                                {{ form.username(class="mt-1 block w-full rounded-md border-gray-300
+                                dark:border-slate-600 shadow-sm focus:border-primary focus:ring-primary sm:text-sm
+                                dark:bg-slate-700 dark:text-white px-3 py-2") }}
+                                {% for error in form.username.errors %}
+                                <span class="text-red-500 text-xs">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-span-6 sm:col-span-4">
+                                {{ form.email.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300")
+                                }}
+                                {{ form.email(class="mt-1 block w-full rounded-md border-gray-300 dark:border-slate-600
+                                shadow-sm focus:border-primary focus:ring-primary sm:text-sm dark:bg-slate-700
+                                dark:text-white px-3 py-2") }}
+                                {% for error in form.email.errors %}
+                                <span class="text-red-500 text-xs">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-span-6">
+                                {{ form.bio.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300") }}
+                                <div class="mt-1">
+                                    {{ form.bio(rows=3, class="mt-1 block w-full rounded-md border-gray-300
+                                    dark:border-slate-600 shadow-sm focus:border-primary focus:ring-primary sm:text-sm
+                                    dark:bg-slate-700 dark:text-white px-3 py-2", placeholder="O'zingiz haqingizda
+                                    qisqacha...") }}
+                                </div>
+                            </div>
+
+                            <div class="col-span-6">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Profil
+                                    rasmi</label>
+                                <div class="mt-1 flex items-center">
+                                    <span
+                                        class="inline-block h-12 w-12 overflow-hidden rounded-full bg-gray-100 dark:bg-slate-700">
+                                        <svg class="h-full w-full text-gray-300" fill="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path
+                                                d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                                        </svg>
+                                    </span>
+                                    {{ form.picture(class="ml-5 rounded-md border border-gray-300 bg-white
+                                    dark:bg-slate-700 py-2 px-3 text-sm font-medium leading-4 text-gray-700
+                                    dark:text-gray-200 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2
+                                    focus:ring-primary focus:ring-offset-2") }}
+                                </div>
+                                {% for error in form.picture.errors %}
+                                <span class="text-red-500 text-xs">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mt-6 text-right">
+                            {{ form.submit(class="inline-flex justify-center rounded-md border border-transparent
+                            bg-primary py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-primary/90
+                            focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

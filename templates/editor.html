@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+<style>
+    /* Dark mode fix for SimpleMDE */
+    .dark .CodeMirror {
+        background: #1e293b;
+        color: #e2e8f0;
+        border-color: #334155;
+    }
+
+    .dark .editor-toolbar {
+        border-color: #334155;
+    }
+
+    .dark .editor-toolbar a {
+        color: #e2e8f0 !important;
+    }
+
+    .dark .editor-toolbar i.separator {
+        border-right-color: #334155;
+    }
+</style>
+
+<div class="max-w-4xl mx-auto">
+    <div class="glass-card p-8 rounded-2xl shadow-xl">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">{{ title }}</h1>
+        <form method="POST" class="space-y-6" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+
+            <div>
+                {{ form.title.label(class="block text-xl font-bold text-gray-700 dark:text-gray-300 mb-2") }}
+                {{ form.title(class="block w-full px-4 py-3 bg-white dark:bg-slate-700 border border-gray-300
+                dark:border-slate-600 rounded-lg shadow-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2
+                focus:ring-blue-500 text-lg placeholder-gray-400", placeholder="Maqola sarlavhasini kiriting...") }}
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                    {{ form.image.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2") }}
+                    {{ form.image(class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2
+                    file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50
+                    file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-slate-700 dark:file:text-blue-400") }}
+                </div>
+            </div>
+
+            <div>
+                {{ form.summary.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2") }}
+                {{ form.summary(rows=3, class="block w-full px-3 py-2 bg-white dark:bg-slate-700 border border-gray-300
+                dark:border-slate-600 rounded-md shadow-sm text-gray-900 dark:text-white focus:outline-none
+                focus:ring-blue-500 focus:border-blue-500", placeholder="Maqola haqida qisqacha (ixtiyoriy)") }}
+            </div>
+
+            <div>
+                {{ form.content(id="markdown-editor") }}
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <a href="{{ url_for('admin_dashboard') }}"
+                    class="mr-4 px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700">
+                    Bekor qilish
+                </a>
+                {{ form.submit(class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium
+                text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                focus:ring-blue-500 cursor-pointer") }}
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    var simplemde = new SimpleMDE({ element: document.getElementById("markdown-editor") });
+</script>
+{% endblock %}

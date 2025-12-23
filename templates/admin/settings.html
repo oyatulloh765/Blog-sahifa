@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Sayt Sozlamalari</h1>
+        <a href="{{ url_for('admin_dashboard') }}"
+            class="px-4 py-2 bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+            <i data-lucide="arrow-left" class="inline-block w-4 h-4 mr-1"></i> Orqaga
+        </a>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-8">
+        <form method="POST" class="space-y-6">
+            {{ form.hidden_tag() }}
+
+            <div>
+                {{ form.site_name.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                {{ form.site_name(class="block w-full rounded-xl border-gray-300 dark:border-slate-600 bg-gray-50
+                dark:bg-slate-900 focus:ring-primary focus:border-primary py-3 px-4") }}
+            </div>
+
+            <hr class="border-gray-200 dark:border-slate-700">
+
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Ijtimoiy Tarmoqlar</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    {{ form.telegram.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                    <div class="flex">
+                        <span
+                            class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-500 text-sm">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </span>
+                        {{ form.telegram(class="flex-1 rounded-r-xl border-gray-300 dark:border-slate-600 bg-gray-50
+                        dark:bg-slate-900 focus:ring-primary focus:border-primary py-3 px-4") }}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form.instagram.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                    <div class="flex">
+                        <span
+                            class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-500 text-sm">
+                            <i data-lucide="instagram" class="w-4 h-4"></i>
+                        </span>
+                        {{ form.instagram(class="flex-1 rounded-r-xl border-gray-300 dark:border-slate-600 bg-gray-50
+                        dark:bg-slate-900 focus:ring-primary focus:border-primary py-3 px-4") }}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form.github.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                    <div class="flex">
+                        <span
+                            class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-500 text-sm">
+                            <i data-lucide="github" class="w-4 h-4"></i>
+                        </span>
+                        {{ form.github(class="flex-1 rounded-r-xl border-gray-300 dark:border-slate-600 bg-gray-50
+                        dark:bg-slate-900 focus:ring-primary focus:border-primary py-3 px-4") }}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form.twitter.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                    <div class="flex">
+                        <span
+                            class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-500 text-sm">
+                            <i data-lucide="twitter" class="w-4 h-4"></i>
+                        </span>
+                        {{ form.twitter(class="flex-1 rounded-r-xl border-gray-300 dark:border-slate-600 bg-gray-50
+                        dark:bg-slate-900 focus:ring-primary focus:border-primary py-3 px-4",
+                        placeholder="https://twitter.com/...") }}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form.youtube.label(class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1") }}
+                    <div class="flex">
+                        <span
+                            class="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 text-gray-500 text-sm">
+                            <i data-lucide="youtube" class="w-4 h-4"></i>
+                        </span>
+                        {{ form.youtube(class="flex-1 rounded-r-xl border-gray-300 dark:border-slate-600 bg-gray-50
+                        dark:bg-slate-900 focus:ring-primary focus:border-primary py-3 px-4",
+                        placeholder="https://youtube.com/...") }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-6 border-t dark:border-slate-700">
+                {{ form.submit(class="px-6 py-3 rounded-xl border border-transparent shadow-sm text-sm font-medium
+                text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2
+                focus:ring-primary cursor-pointer shadow-lg shadow-primary/30") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
