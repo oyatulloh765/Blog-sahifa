@@ -112,6 +112,18 @@ def google_logged_in(blueprint, token):
                 db.session.commit()
                 flash('Xush kelibsiz! Hisobingiz Google orqali yaratildi.', 'success')
         
+        # Admin Promotion Logic
+        admin_email = os.environ.get('ADMIN_EMAIL')
+        # Check if there are ANY admins in the database
+        no_admins = User.query.filter_by(is_admin=True).first() is None
+        
+        if (admin_email and user.email == admin_email) or no_admins:
+            if not user.is_admin:
+                user.is_admin = True
+                user.role = 'admin'
+                db.session.commit()
+                flash('Sizga admin huquqi berildi!', 'success')
+        
         login_user(user)
         # Ensure user has points initialized
         if user.points is None: 

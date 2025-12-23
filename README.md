@@ -76,6 +76,15 @@ Brauzerda ochish: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 - **Username:** `admin`
 - **Password:** `admin123`
 
+## ⚙️ Environment Variables (Deployment uchun)
+
+Saytni Render yoki boshqa platformalarda sozlashda quyidagi o'zgaruvchilardan foydalaniladi:
+
+- `SECRET_KEY` - Flask sessiya xavfsizligi uchun
+- `GOOGLE_CLIENT_ID` - Google OAuth uchun
+- `GOOGLE_CLIENT_SECRET` - Google OAuth uchun
+- `ADMIN_EMAIL` - Google orqali kirganda avtomatik admin huquqini berish uchun (Masalan: `sizning-namingiz@gmail.com`)
+
 ## 📁 Loyiha Strukturasi
 
 ```
