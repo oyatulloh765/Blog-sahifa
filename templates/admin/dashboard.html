@@ -85,6 +85,7 @@
                         <th class="px-6 py-3">Sarlavha</th>
                         <th class="px-6 py-3">Kategoriya</th>
                         <th class="px-6 py-3">Ko'rishlar</th>
+                        <th class="px-6 py-3">Layklar</th>
                         <th class="px-6 py-3">Izohlar</th>
                         <th class="px-6 py-3">Sana</th>
                         <th class="px-6 py-3 text-right">Amallar</th>
@@ -106,6 +107,9 @@
                             <i data-lucide="eye" class="inline w-4 h-4"></i> {{ post.views }}
                         </td>
                         <td class="px-6 py-4 text-gray-500 dark:text-gray-400">
+                            <i data-lucide="heart" class="inline w-4 h-4"></i> {{ post.likes or 0 }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 dark:text-gray-400">
                             <i data-lucide="message-circle" class="inline w-4 h-4"></i> {{ post.comments|length }}
                         </td>
                         <td class="px-6 py-4 text-gray-500 dark:text-gray-400">
@@ -120,6 +124,57 @@
                         </td>
                     </tr>
                     {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Comments -->
+    <div
+        class="mt-8 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Oxirgi Izohlar</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="bg-gray-50 dark:bg-slate-700/50 text-gray-500 dark:text-gray-400">
+                    <tr>
+                        <th class="px-6 py-3">Muallif</th>
+                        <th class="px-6 py-3">Izoh matni</th>
+                        <th class="px-6 py-3">Maqola</th>
+                        <th class="px-6 py-3">Sana</th>
+                        <th class="px-6 py-3 text-right">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-slate-700">
+                    {% for comment in recent_comments %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                            {{ comment.author_name or 'Anonymous' }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 dark:text-gray-400 max-w-xs truncate">
+                            {{ comment.content }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 dark:text-gray-400 font-medium">
+                            {{ comment.post.title }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 dark:text-gray-400">
+                            {{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <a href="{{ url_for('delete_comment', id=comment.id) }}"
+                                class="text-red-600 dark:text-red-400 hover:text-red-900 font-medium"
+                                onclick="return confirm('Izohni o\'chirmoqchimisiz?')">O'chirish</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not recent_comments %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                            Hozircha izohlar yo'q.
+                        </td>
+                    </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>

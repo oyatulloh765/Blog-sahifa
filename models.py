@@ -64,6 +64,7 @@ class Post(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     status = db.Column(db.String(20), default='published') # draft, published
     views = db.Column(db.Integer, default=0)
+    likes = db.Column(db.Integer, default=0)
     
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)

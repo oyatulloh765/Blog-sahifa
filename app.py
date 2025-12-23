@@ -237,9 +237,9 @@ def check_badges(user):
 @login_required
 def like_post(slug):
     post = Post.query.filter_by(slug=slug).first_or_404()
-    # In V2, we might want a Like model, but for now simple point system
-    # If we had a Like model:
-    # like = Like.query.filter_by(user_id=current_user.id, post_id=post.id).first()
+    
+    # Increment post likes
+    post.likes = (post.likes or 0) + 1
     
     # Simple Gamification: Award point for liking
     if current_user.points is None: current_user.points = 0
@@ -247,7 +247,7 @@ def like_post(slug):
     check_badges(current_user)
     db.session.commit()
     
-    return jsonify({'status': 'success', 'points': current_user.points})
+    return jsonify({'status': 'success', 'points': current_user.points, 'likes': post.likes})
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -332,10 +332,14 @@ def save_picture(form_picture, subdir=''):
 @app.route('/admin')
 @login_required
 def admin_dashboard():
+    if not current_user.is_admin:
+        abort(403)
     posts = Post.query.order_by(Post.created_at.desc()).all()
     total_comments = Comment.query.count()
     total_users = User.query.count()
-    return render_template('admin/dashboard.html', posts=posts, total_comments=total_comments, total_users=total_users)
+    recent_comments = Comment.query.order_by(Comment.created_at.desc()).limit(10).all()
+    return render_template('admin/dashboard.html', posts=posts, total_comments=total_comments, 
+                           total_users=total_users, recent_comments=recent_comments)
 
 @app.route('/admin/new', methods=['GET', 'POST'])
 @login_required
@@ -447,10 +451,23 @@ def edit_post(id):
 @app.route('/admin/delete/<int:id>')
 @login_required
 def delete_post(id):
+    if not current_user.is_admin:
+        abort(403)
     post = Post.query.get_or_404(id)
     db.session.delete(post)
     db.session.commit()
     flash('Maqola o\'chirildi', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/comment/delete/<int:id>')
+@login_required
+def delete_comment(id):
+    if not current_user.is_admin:
+        abort(403)
+    comment = Comment.query.get_or_404(id)
+    db.session.delete(comment)
+    db.session.commit()
+    flash('Izoh o\'chirildi', 'success')
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/settings', methods=['GET', 'POST'])
