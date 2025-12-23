@@ -1,4 +1,5 @@
-from flask import Flask, render_template, abort, redirect, url_for, request, flash, jsonify
+from flask import Flask, render_template, abort, redirect, url_for, request, flash, jsonify, current_app
+from urllib.parse import urlparse, urljoin
 import os
 import markdown
 import bleach
@@ -67,6 +68,7 @@ def google_logged_in(blueprint, token):
     google_user_id = google_info['id']
     email = google_info.get('email')
     name = google_info.get('name', email.split('@')[0] if email else 'user')
+    picture_url = google_info.get('picture')
     
     # Check if user exists with this Google ID
     user = User.query.filter_by(google_id=google_user_id).first()
@@ -77,6 +79,8 @@ def google_logged_in(blueprint, token):
         if user:
             # Link existing account with Google
             user.google_id = google_user_id
+            if picture_url and (not user.avatar or user.avatar == 'default_avatar.png'):
+                user.avatar = picture_url
             db.session.commit()
             flash('Google hisobingiz mavjud hisobingiz bilan bog\'landi!', 'success')
         else:
@@ -92,19 +96,33 @@ def google_logged_in(blueprint, token):
             user = User(
                 username=username,
                 email=email,
-                google_id=google_user_id
+                google_id=google_user_id,
+                avatar=picture_url if picture_url else 'default_avatar.png',
+                points=1, # Initial point for signing up
+                streak=1
             )
             db.session.add(user)
             db.session.commit()
-            flash('Hisob muvaffaqiyatli yaratildi!', 'success')
+            flash('Xush kelibsiz! Hisobingiz Google orqali yaratildi.', 'success')
     
     login_user(user)
     flash(f'Xush kelibsiz, {user.username}!', 'success')
     
-    # Don't store token in database (we don't need it after login)
-    return False
+    # Initial gamification check
+    if user.points is None: user.points = 0
+    check_badges(user)
+    db.session.commit()
+    
+    # Return a redirect response to the index page.
+    return redirect(url_for('index'))
 
 # --- Helpers ---
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+           ref_url.netloc == test_url.netloc
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'webp'}
 
@@ -237,9 +255,11 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data, points=1)
         user.set_password(form.password.data)
         db.session.add(user)
+        db.session.commit()
+        check_badges(user)
         db.session.commit()
         flash('Hisobingiz muvaffaqiyatli yaratildi! Endi kirishingiz mumkin.', 'success')
         return redirect(url_for('login'))
@@ -255,7 +275,9 @@ def login():
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('index'))
+            if not next_page or not is_safe_url(next_page):
+                next_page = url_for('index')
+            return redirect(next_page)
         flash('Login yoki parol noto\'g\'ri', 'error')
     return render_template('auth/login.html', title='Kirish', form=form)
 
@@ -282,7 +304,13 @@ def account():
         form.username.data = current_user.username
         form.email.data = current_user.email
         form.bio.data = current_user.bio
-    image_file = url_for('static', filename='uploads/avatars/' + current_user.avatar)
+    
+    # Handle external vs local avatar
+    if current_user.avatar and (current_user.avatar.startswith('http://') or current_user.avatar.startswith('https://')):
+        image_file = current_user.avatar
+    else:
+        image_file = url_for('static', filename='uploads/avatars/' + (current_user.avatar or 'default_avatar.png'))
+        
     return render_template('auth/account.html', title='Profil', image_file=image_file, form=form)
 
 def save_picture(form_picture, subdir=''):

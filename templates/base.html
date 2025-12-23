@@ -95,8 +95,11 @@
 
                     {% if current_user.is_authenticated %}
                     <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center space-x-1 hover:text-primary">
-                            <span>Admin</span>
+                        <button @click="open = !open" class="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
+                            <img class="h-8 w-8 rounded-full object-cover border border-gray-200 dark:border-slate-700" 
+                                 src="{% if current_user.avatar and (current_user.avatar.startswith('http://') or current_user.avatar.startswith('https://')) %}{{ current_user.avatar }}{% else %}{{ url_for('static', filename='uploads/avatars/' + (current_user.avatar or 'default_avatar.png')) }}{% endif %}" 
+                                 alt="{{ current_user.username }}">
+                            <span class="hidden lg:block font-medium">{{ current_user.username }}</span>
                             <i data-lucide="chevron-down" class="w-4 h-4"></i>
                         </button>
                         <div x-show="open" @click.away="open = false"

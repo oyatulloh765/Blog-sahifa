@@ -8,6 +8,7 @@ pip install -r requirements.txt
 # Create upload directories
 mkdir -p static/uploads/videos
 mkdir -p static/uploads/audio
+mkdir -p static/uploads/avatars
 
 # Run database migrations
 flask db upgrade

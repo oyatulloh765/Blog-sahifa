@@ -120,5 +120,8 @@ class SiteSettings(db.Model):
         if not settings:
             settings = SiteSettings()
             db.session.add(settings)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except:
+                db.session.rollback()
         return settings
