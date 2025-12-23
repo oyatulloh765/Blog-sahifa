@@ -7,6 +7,11 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
+# Flask-Dance for OAuth
+from flask_dance.contrib.google import make_google_blueprint, google
+from flask_dance.consumer import oauth_authorized
+from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
+
 from extensions import db, login_manager, migrate, mail
 from models import User, Post, Category, Comment, Badge, Analytics, SiteSettings
 from forms import LoginForm, PostForm, CommentForm, ContactForm, RegistrationForm, UpdateAccountForm, SiteSettingsForm
@@ -28,9 +33,71 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 mail.init_app(app)
 
+# Google OAuth Blueprint
+google_bp = make_google_blueprint(
+    client_id=os.getenv('GOOGLE_CLIENT_ID'),
+    client_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
+    scope=['openid', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'],
+    redirect_url='/login/google/authorized'
+)
+app.register_blueprint(google_bp, url_prefix='/login')
+
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
+
+# Google OAuth signal handler
+@oauth_authorized.connect_via(google_bp)
+def google_logged_in(blueprint, token):
+    if not token:
+        flash('Google bilan kirishda xatolik yuz berdi.', 'error')
+        return False
+    
+    resp = google.get('/oauth2/v2/userinfo')
+    if not resp.ok:
+        flash('Google ma\'lumotlarini olishda xatolik.', 'error')
+        return False
+    
+    google_info = resp.json()
+    google_user_id = google_info['id']
+    email = google_info.get('email')
+    name = google_info.get('name', email.split('@')[0] if email else 'user')
+    
+    # Check if user exists with this Google ID
+    user = User.query.filter_by(google_id=google_user_id).first()
+    
+    if not user:
+        # Check if user exists with this email
+        user = User.query.filter_by(email=email).first()
+        if user:
+            # Link existing account with Google
+            user.google_id = google_user_id
+            db.session.commit()
+            flash('Google hisobingiz mavjud hisobingiz bilan bog\'landi!', 'success')
+        else:
+            # Create new user
+            # Generate unique username
+            base_username = name.replace(' ', '_').lower()[:20]
+            username = base_username
+            counter = 1
+            while User.query.filter_by(username=username).first():
+                username = f"{base_username}{counter}"
+                counter += 1
+            
+            user = User(
+                username=username,
+                email=email,
+                google_id=google_user_id
+            )
+            db.session.add(user)
+            db.session.commit()
+            flash('Hisob muvaffaqiyatli yaratildi!', 'success')
+    
+    login_user(user)
+    flash(f'Xush kelibsiz, {user.username}!', 'success')
+    
+    # Don't store token in database (we don't need it after login)
+    return False
 
 # --- Helpers ---
 def allowed_file(filename):
