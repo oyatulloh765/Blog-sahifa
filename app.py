@@ -56,65 +56,81 @@ def load_user(user_id):
 @oauth_authorized.connect_via(google_bp)
 def google_logged_in(blueprint, token):
     if not token:
-        flash('Google bilan kirishda xatolik yuz berdi.', 'error')
+        flash('Google bilan kirishda xatolik yuz berdi: Token olinmadi.', 'error')
         return False
     
-    resp = google.get('/oauth2/v2/userinfo')
-    if not resp.ok:
-        flash('Google ma\'lumotlarini olishda xatolik.', 'error')
-        return False
-    
-    google_info = resp.json()
-    google_user_id = google_info['id']
-    email = google_info.get('email')
-    name = google_info.get('name', email.split('@')[0] if email else 'user')
-    picture_url = google_info.get('picture')
-    
-    # Check if user exists with this Google ID
-    user = User.query.filter_by(google_id=google_user_id).first()
-    
-    if not user:
-        # Check if user exists with this email
-        user = User.query.filter_by(email=email).first()
-        if user:
-            # Link existing account with Google
-            user.google_id = google_user_id
-            if picture_url and (not user.avatar or user.avatar == 'default_avatar.png'):
-                user.avatar = picture_url
+    try:
+        resp = google.get('/oauth2/v2/userinfo')
+        if not resp.ok:
+            flash(f'Google ma\'lumotlarini olishda xatolik: {resp.status_code}', 'error')
+            return False
+        
+        google_info = resp.json()
+        # Google uses 'id' or 'sub' for unique identifier
+        google_user_id = google_info.get('id') or google_info.get('sub')
+        email = google_info.get('email')
+        
+        if not google_user_id or not email:
+            flash('Google hisobidan kerakli ma\'lumotlar (ID yoki Email) olinmadi. Iltimos, ruxsatnomalarni tekshiring.', 'error')
+            return False
+
+        name = google_info.get('name', email.split('@')[0])
+        picture_url = google_info.get('picture')
+        
+        # Check if user exists with this Google ID
+        user = User.query.filter_by(google_id=google_user_id).first()
+        
+        if not user:
+            # Check if user exists with this email
+            user = User.query.filter_by(email=email).first()
+            if user:
+                # Link existing account with Google
+                user.google_id = google_user_id
+                if picture_url and (not user.avatar or user.avatar == 'default_avatar.png'):
+                    user.avatar = picture_url
+                db.session.commit()
+                flash('Google hisobingiz mavjud hisobingiz bilan bog\'landi!', 'success')
+            else:
+                # Create new user
+                # Generate unique username
+                base_username = name.replace(' ', '_').lower()[:20]
+                username = base_username
+                counter = 1
+                while User.query.filter_by(username=username).first():
+                    username = f"{base_username}{counter}"
+                    counter += 1
+                
+                user = User(
+                    username=username,
+                    email=email,
+                    google_id=google_user_id,
+                    avatar=picture_url if picture_url else 'default_avatar.png',
+                    points=1,
+                    streak=1
+                )
+                db.session.add(user)
+                db.session.commit()
+                flash('Xush kelibsiz! Hisobingiz Google orqali yaratildi.', 'success')
+        
+        login_user(user)
+        # Ensure user has points initialized
+        if user.points is None: 
+            user.points = 0
             db.session.commit()
-            flash('Google hisobingiz mavjud hisobingiz bilan bog\'landi!', 'success')
-        else:
-            # Create new user
-            # Generate unique username
-            base_username = name.replace(' ', '_').lower()[:20]
-            username = base_username
-            counter = 1
-            while User.query.filter_by(username=username).first():
-                username = f"{base_username}{counter}"
-                counter += 1
             
-            user = User(
-                username=username,
-                email=email,
-                google_id=google_user_id,
-                avatar=picture_url if picture_url else 'default_avatar.png',
-                points=1, # Initial point for signing up
-                streak=1
-            )
-            db.session.add(user)
-            db.session.commit()
-            flash('Xush kelibsiz! Hisobingiz Google orqali yaratildi.', 'success')
-    
-    login_user(user)
-    flash(f'Xush kelibsiz, {user.username}!', 'success')
-    
-    # Initial gamification check
-    if user.points is None: user.points = 0
-    check_badges(user)
-    db.session.commit()
-    
-    # Return a redirect response to the index page.
-    return redirect(url_for('index'))
+        check_badges(user)
+        db.session.commit()
+        
+        flash(f'Xush kelibsiz, {user.username}!', 'success')
+        return redirect(url_for('index'))
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Tizimga kirishda kutilmagan xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.", 'error')
+        # We could show {str(e)} but for security we show a generic message and potentially log it.
+        # But for this task, showing a better error helps.
+        print(f"DEBUG LOGIN ERROR: {str(e)}")
+        return redirect(url_for('login'))
 
 # --- Helpers ---
 def is_safe_url(target):
